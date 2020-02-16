@@ -2,20 +2,21 @@
 
 This library has been designed to delegate long, heavy-lifting background jobs into a server. The server is created on demand, and the program using it communicates with the server using a UNIX socket. The communication protocol on both ways is:
 
+| Byte | Var | Dword | Var |
 | --- | --- | --- | --- |
-| Label length (1 byte) | Label | Payload length (4 bytes) | Payload |
+| `Label` length | `Label` | `Payload` length | `Payload` |
 
 The messages follow next rules:
 
-* Label length is 1 byte, so labels cannot be longer than 255.
+* `Label` length is 1 byte, so labels cannot be longer than 255.
 
-* Label is, by default UTF-8 encoded.
+* `Label` is, by default UTF-8 encoded.
 
 * When there is no label, the label length must be 0.
 
-* Payload length is an unsigned integer, using 4 bytes in big endian.
+* `Payload` length is an unsigned integer, using 4 bytes in big endian.
 
-* Payload is, by default UTF-8 encoded JSON, so clients in other programming languages can encode/decode it.
+* `Payload` is, by default UTF-8 encoded JSON, so clients in other programming languages can encode/decode it.
 
 * When there is no payload, the payload length must be 0.
 
