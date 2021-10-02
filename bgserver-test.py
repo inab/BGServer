@@ -4,7 +4,7 @@ import sys
 import socketserver
 import time
 
-from BGServer import BGServer , BGRequestHandler
+from BGServer.bgserver import BGServer , BGRequestHandler
 
 
 class TestStreamRequestHandler(BGRequestHandler):

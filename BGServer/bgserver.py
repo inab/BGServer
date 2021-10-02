@@ -52,7 +52,7 @@ class BGRequestHandler(socketserver.BaseRequestHandler):
 			sock.sendall(bPayloadSize)
 			sock.sendall(bPayload)
 		else:
-			sock.sendall(self.ZERO_PACK)
+			sock.sendall(cls.ZERO_PACK)
 	
 	@classmethod
 	def RecvBytes(cls,sock,rSize,received=None):
@@ -120,11 +120,11 @@ class BGServer(object):
 		# Initializing this
 		self.serverLockFile = self.config.get('server',{}).get('lock')
 		if self.serverLockFile is None:
-			self.serverLockFile = os.path.join(tempdir.gettempdir(),self.DEFAULT_LOCK_FILENAME)
+			self.serverLockFile = os.path.join(tempfile.gettempdir(),self.DEFAULT_LOCK_FILENAME)
 		
 		self.serverSocket = self.config.get('server',{}).get('socket')
 		if self.serverSocket is None:
-			self.serverSocket = os.path.join(tempdir.gettempdir(),self.DEFAULT_SOCKET_NAME)
+			self.serverSocket = os.path.join(tempfile.gettempdir(),self.DEFAULT_SOCKET_NAME)
 	
 	def forkServer(self,context,stdout=None,stderr=None):
 		# Am I the new server process?
@@ -138,13 +138,14 @@ class BGServer(object):
 						# Other one controls all
 						# Gracefully exit
 						if stderr is not None:
-							strerr.write(str(time.time())+"\nLOCKED\n")
+							stderr.write(str(time.time())+"\nLOCKED\n")
 						sys.exit(1)
 					
 					try:
 						# At this point, we should be the only ones controlling this socket
 						# As it is a UNIX one, its dir entry must be removed on each usage
-						os.unlink(self.serverSocket)
+						if os.path.exists(self.serverSocket):
+							os.unlink(self.serverSocket)
 						with socketserver.UnixStreamServer(self.serverSocket,self.handlerClass) as server:
 							server.config = self.config
 							server.context = context
