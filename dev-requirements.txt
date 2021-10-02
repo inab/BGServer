@@ -1,0 +1,4 @@
+pydeps
+pylint
+build
+twine
